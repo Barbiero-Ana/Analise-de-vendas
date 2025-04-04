@@ -154,10 +154,25 @@ while True:
 #-----------------------------------------------------------------------------------------
 
         # fazer os outros ainda
+
 #--------globalsales----------------------------------------------------------------
     elif op == 5:
         total_vendas = df['Global_Sales'].sum()
         print('\nA venda global em forma total é de:')
         print(f'-> Global Sales: {total_vendas}\n')
 
+#-----------------------------------------------------------------------------------------
+
+#--------filtrar por genero ----------------------------------------------------------------
+
+    elif op == 6:
+        generos = sorted(df['Genre'].unique())
+        print('\nGêneros disponiveis:')
+        for genero in generos:
+            print(f'- {genero}')
+        filtro = input('\nDigite o gênero que deseja buscar (favor, digitar igual está na tabela): ')
+        filter_games = df[df['Genre'] == filtro]
+        print(f'\nJogos do gênero: {filtro}:')
+        print(filter_games[['Genre','Name', 'Publisher' ]])
+        
 #-----------------------------------------------------------------------------------------
