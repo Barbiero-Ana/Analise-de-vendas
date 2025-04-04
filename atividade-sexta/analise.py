@@ -24,6 +24,7 @@ while True:
 
     op = int(input('- '))
 
+#--------info do arqv----------------------------------------------------------------
 
     if op == 1:
         print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - Ver tipos de dados do arquivo\n4 - #pensando ainda.... ')
@@ -36,6 +37,8 @@ while True:
         elif op == 3:
             info = df.info()
             print(info)
+
+# ---------------------------------------------------------------------------------------
 
 
 #--------Filtro de vendas----------------------------------------------------------------
@@ -134,6 +137,9 @@ while True:
                     print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 #-----------------------------------------------------------------------------------------
 
+
+#--------listar os jogs----------------------------------------------------------------
+
     elif op == 3:
         print('\nDigite quantos jogos deseja listar:\n1 - Todos\n2 - inserir quantidade')
         op = int(input('- '))
@@ -145,11 +151,13 @@ while True:
             filtro = int(input('Digite a quantidade de jogos que deseja listar: '))
             n = df['Name'].head(filtro)
             print(f'{n}\n')
-
+#-----------------------------------------------------------------------------------------
 
         # fazer os outros ainda
-
+#--------globalsales----------------------------------------------------------------
     elif op == 5:
         total_vendas = df['Global_Sales'].sum()
         print('\nA venda global em forma total é de:')
         print(f'-> Global Sales: {total_vendas}\n')
+
+#-----------------------------------------------------------------------------------------
