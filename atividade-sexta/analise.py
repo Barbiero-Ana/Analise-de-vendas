@@ -47,8 +47,8 @@ while True:
             print(f'\nCom um total de vendas de: {df[df['Year'] == filtro]['Global_Sales'].sum()}')
 
         # fazer os outros ainda
-        
-        elif op == 5:
-            total_vendas = df['Global_Sales'].sum()
-            print('\nA venda global em forma total é de:')
-            print(f'-> {total_vendas}\n')
+
+    elif op == 5:
+        total_vendas = df['Global_Sales'].sum()
+        print('\nA venda global em forma total é de:')
+        print(f'-> {total_vendas}\n')
