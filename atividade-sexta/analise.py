@@ -1,11 +1,10 @@
 import pandas as pd
 
 df = pd.read_csv('vgsales.csv') #abrindo e lendo o arquivo
-
 column_names = df.columns
-pd.set_option('display.max_rows', None)  # Mostra todas as linhas
-pd.set_option('display.max_columns', None)  # Mostra todas as colunas
-pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabecalhos 
+pd.set_option('display.max_rows', None)  # mostra todas as linhas (tira os ... que o pandas resume)
+pd.set_option('display.max_columns', None)  # mostra todas as colunas (tira os ... que o pandas resume)
+pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabecalhos (tira os ... que o pandas resume)
 
 
 
@@ -21,7 +20,7 @@ pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabeca
 
 while True:
 
-    print('\nDigite a opção que deseja:\n1 - Informações sobre o arquivo/dados\n2 - Vendas\n3 - Listar jogos\n4 - Ver lançamentos\n5 - Mostrar jogos publicados')
+    print('\nDigite a opção que deseja:\n1 - Informações sobre o arquivo/dados\n2 - Vendas\n3 - Listar jogos\n4 - Ver lançamentos\n5 - Mostrar jogos publicados\n6 - Filtrar jogos por genero\n7 - Ver ocorrências')
 
     op = int(input('- '))
 
@@ -30,7 +29,7 @@ while True:
         print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - Ver tipos de dados do arquivo\n4 - #pensando ainda.... ')
         op = int(input('- '))
         if op == 1:
-            info = df.info()
+            print(column_names)
         elif op == 2:
             print(f'\nNúmero de linhas:c {df.shape[0]} | Número de colunas: {df.shape[1]}\n')
 
@@ -39,12 +38,12 @@ while True:
             print(info)
 
 
-
+#--------Filtro de vendas----------------------------------------------------------------
     if op == 2:
-        print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais')
+        print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n\n6 - Jogos mais vendidos\n')
         op = int(input('- '))
 
-
+        # por ano
         if op == 1:
             print('\nDigite o ano pelo qual deseja filtrar:')
             filtro = int(input('- '))
@@ -53,6 +52,7 @@ while True:
             print(f'{jogo_filter[['Name', 'Rank', 'Year', 'Publisher', 'Genre']]}\n')
             print(f'\nCom um total de vendas de: {df[df['Year'] == filtro]['Global_Sales'].sum()}')
 
+        # por empresa
         elif op == 2:
             name = input('\nDigite o nome da empresa: ')
             jogo_filter = df[df['Publisher'] == name]
@@ -62,7 +62,7 @@ while True:
 
             # fazer o 3 ainda
 
-
+        # continente
         elif op == 4:
             print('\nDigite qual continente deseja ver:\n1 - EU_Sales\n2 - NA_Sales\n3 - JP_Sales\n4 - Others')
             op = int(input('- '))
@@ -132,15 +132,15 @@ while True:
                     filter_vendas = df[df['Publisher'] == empresa]
                     print(f'\nVendas da empresa: {empresa} em outras vendas')
                     print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
-
+#-----------------------------------------------------------------------------------------
 
     elif op == 3:
         print('\nDigite quantos jogos deseja listar:\n1 - Todos\n2 - inserir quantidade')
         op = int(input('- '))
 
         if op == 1:
-            #inserir o código
-            print()
+            n = df['Name']
+            print(n)
         elif op == 2:
             filtro = int(input('Digite a quantidade de jogos que deseja listar: '))
             n = df['Name'].head(filtro)
