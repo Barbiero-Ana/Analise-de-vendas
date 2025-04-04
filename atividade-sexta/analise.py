@@ -21,13 +21,13 @@ pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabeca
 
 while True:
 
-    print('Digite a opção que deseja:\n1 - Informações sobre o arquivo/dados\n2 - Vendas\n3 - Listar jogos\n4 - Ver lançamentos\n5 - Mostrar jogos publicados')
+    print('\nDigite a opção que deseja:\n1 - Informações sobre o arquivo/dados\n2 - Vendas\n3 - Listar jogos\n4 - Ver lançamentos\n5 - Mostrar jogos publicados')
 
     op = int(input('- '))
 
 
     if op == 1:
-        print('Deseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - #ainda decidindo... ')
+        print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - #ainda decidindo... ')
         op = int(input('- '))
         if op == 1:
             info = df.info()
@@ -46,9 +46,29 @@ while True:
             print(f'{jogo_filter[['Name', 'Rank', 'Year', 'Publisher', 'Genre']]}\n')
             print(f'\nCom um total de vendas de: {df[df['Year'] == filtro]['Global_Sales'].sum()}')
 
+        elif op == 2:
+            name = input('\nDigite o nome da empresa: ')
+            jogo_filter = df[df['Publisher'] == name]
+            print(f'Jogos lançados por: {name}')
+            print(f'{jogo_filter[['Name', 'Publisher']]}')
+
+
+    elif op == 3:
+        print('\nDigite quantos jogos deseja listar:\n1 - Todos\n2 - inserir quantidade')
+        op = int(input('- '))
+
+        if op == 1:
+            #inserir o código
+            print()
+        elif op == 2:
+            filtro = int(input('Digite a quantidade de jogos que deseja listar: '))
+            n = df['Name'].head(filtro)
+            print(f'{n}\n')
+
+
         # fazer os outros ainda
 
     elif op == 5:
         total_vendas = df['Global_Sales'].sum()
         print('\nA venda global em forma total é de:')
-        print(f'-> {total_vendas}\n')
+        print(f'-> Global Sales: {total_vendas}\n')
