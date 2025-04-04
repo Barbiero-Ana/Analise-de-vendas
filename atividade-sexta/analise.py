@@ -53,6 +53,21 @@ while True:
             print(f'{jogo_filter[['Name', 'Publisher']]}')
 
 
+            # fazer o 3 ainda
+
+
+        elif op == 4:
+            print('\nDigite qual continente deseja ver:\n1 - EU_Sales\2 - NA_Sales\n3 - JP_Sales\n4 - Others')
+            op = int(input('- '))
+            if op == 1:
+                vendas = 'EU_Sales'
+                decision = input('Deseja filtrar por vendas?\n (S/N): ')
+                if decision == 'S'.lower():
+                    valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
+                    print(f'Vendas filtradas por: {vendas} | {valor_venda}\n')
+                    print(df[])
+
+
     elif op == 3:
         print('\nDigite quantos jogos deseja listar:\n1 - Todos\n2 - inserir quantidade')
         op = int(input('- '))
