@@ -27,12 +27,19 @@ while True:
 
 
     if op == 1:
-        print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - #ainda decidindo... ')
+        print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - Ver tipos de dados do arquivo\n4 - #pensando ainda.... ')
         op = int(input('- '))
         if op == 1:
             info = df.info()
         elif op == 2:
             print(f'\nNúmero de linhas:c {df.shape[0]} | Número de colunas: {df.shape[1]}\n')
+
+        elif op == 3:
+            info = df.info()
+            print(info)
+
+
+
     if op == 2:
         print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais')
         op = int(input('- '))
@@ -65,12 +72,12 @@ while True:
                 if decision == 'S'.lower():
                     valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['EU_Sales'] >= valor_venda)]
+                    filter_vendas = df[(df['Publisher'] == empresa) & (df['EU_Sales'] > valor_venda)]
                     print(f'\nVendas da empresa: {empresa} na Europa com valores acima de: {valor_venda} milhões')
                     print(filter_vendas[['Name', 'Publisher' ,'EU_Sales']])
                 elif decision == 'N'.lower():
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['EU_Sales'])]
+                    filter_vendas = df[df['Publisher'] == empresa]
                     print(f'\nVendas da empresa: {empresa} na Europa')
                     print(filter_vendas[['Name', 'Publisher' ,'EU_Sales']])
 
@@ -80,29 +87,36 @@ while True:
                 if decision == 'S'.lower():
                     valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['NA_Sales'] >= valor_venda)]
+                    filter_vendas = df[(df['Publisher'] == empresa) & (df['NA_Sales'] > valor_venda)]
                     print(f'\nVendas da empresa: {empresa} na América do norte com valores acima de: {valor_venda} milhões')
-                    print(filter_vendas[['Name', 'Publisher' ,'EU_Sales']])
+                    print(filter_vendas[['Name', 'Publisher' ,'NA_Sales']])
                 elif decision == 'N'.lower():
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['NA_Sales'])]
+                    filter_vendas = df[df['Publisher'] == empresa]
                     print(f'\nVendas da empresa: {empresa} na América do norte')
                     print(filter_vendas[['Name', 'Publisher' ,'NA_Sales']])
             
             elif op == 3:
                 vendas = 'JP_Sales'
                 decision = input('Deseja filtrar por vendas?\n (S/N): ')
-                if decision == 'S'.lower():
+
+                if decision.lower() == 's'.lower():
                     valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['JP_Sales'] >= valor_venda)]
+                    
+                    filter_vendas = df[(df['Publisher'] == empresa) & (df['JP_Sales'] > valor_venda)]
+                    
                     print(f'\nVendas da empresa: {empresa} no Japão com valores acima de: {valor_venda} milhões')
-                    print(filter_vendas[['Name', 'Publisher' ,'JP_Sales']])
-                elif decision == 'N'.lower():
+                    print(filter_vendas[['Name', 'Publisher', 'JP_Sales']])
+                    
+                elif decision.lower() == 'n'.lower():
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['JP_Sales'])]
-                    print(f'\nVendas da empresa: {empresa} no Japão')
-                    print(filter_vendas[['Name', 'Publisher' ,'JP_Sales']])
+                    
+                    filter_vendas = df[df['Publisher'] == empresa]
+                    
+                    print(f'\nTodas as vendas da empresa: {empresa} no Japão')
+                    print(filter_vendas[['Name', 'Publisher', 'JP_Sales']])
+
 
             elif op == 4:
                 vendas = 'Other_Sales'
@@ -110,12 +124,12 @@ while True:
                 if decision == 'S'.lower():
                     valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['Other_Sales'] >= valor_venda)]
+                    filter_vendas = df[(df['Publisher'] == empresa) & (df['Other_Sales'] > valor_venda)]
                     print(f'\nVendas da empresa: {empresa} em Outras vendas com valores acima de: {valor_venda} milhões')
                     print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
                 elif decision == 'N'.lower():
                     empresa = input('Digite o nome da empresa pela qual deseja filtrar: ')
-                    filter_vendas = df[(df['Publisher'] == empresa) & (df['Other_Sales'])]
+                    filter_vendas = df[df['Publisher'] == empresa]
                     print(f'\nVendas da empresa: {empresa} em outras vendas')
                     print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 
