@@ -3,6 +3,10 @@ import pandas as pd
 df = pd.read_csv('vgsales.csv') #abrindo e lendo o arquivo
 
 column_names = df.columns
+pd.set_option('display.max_rows', None)  # Mostra todas as linhas
+pd.set_option('display.max_columns', None)  # Mostra todas as colunas
+pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabecalhos 
+
 
 
 # if 3 -> dar opcao de escolher a quantia de jogos que quer listar
@@ -32,4 +36,11 @@ while True:
     if op == 2:
         print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais')
         op = int(input('- '))
-        
+
+
+        if op == 1:
+            print('\nDigite o ano pelo qual deseja filtrar:')
+            filtro = int(input('- '))
+            jogo_filter = df[df['Year'] == filtro]
+            print(f'\nJogos lançados em: {filtro}')
+            print(f'{jogo_filter[['Name', 'Rank', 'Year', 'Publisher', 'Genre']]}\n')
