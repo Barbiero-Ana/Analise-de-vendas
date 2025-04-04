@@ -174,5 +174,12 @@ while True:
         filter_games = df[df['Genre'] == filtro]
         print(f'\nJogos do gênero: {filtro}:')
         print(filter_games[['Genre','Name', 'Publisher' ]])
-        
+
 #-----------------------------------------------------------------------------------------
+
+#--------filtrar ocorrencias no arqv ----------------------------------------------------------------
+
+    # na op 2 -> colocar uma funcao para que o usuário possa escolher de qual continente ele quer escolher e qual a quantia de jogos com maiores vendas
+
+    elif op == 7:
+        print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas (por continente)\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
