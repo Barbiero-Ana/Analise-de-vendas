@@ -43,7 +43,7 @@ def info_arv():
 def filtro_vendas():
     #--------Filtro de vendas----------------------------------------------------------------
 
-            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n\n6 - Jogos mais vendidos\n')
+            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n')
             op = int(input('- '))
 
             # por ano
@@ -160,6 +160,9 @@ def global_sales():
 
         if decisao == 'S'.lower():
             filtro = int(input(''))
+            filter_vendas = df[(df['Global_Sale'] > filtro)]
+            print(f'\nVendas globais com valores acima de: {filtro}')
+            print(filter_vendas[['Name', 'Publisher' ,'Global_Sales']])
             #fazer função de filtro
 
         elif decisao == 'N'.lower():
@@ -207,5 +210,6 @@ def main():
             filtro_vendas()
         elif op == 3:
             listar_games()
+        
 
 main()
