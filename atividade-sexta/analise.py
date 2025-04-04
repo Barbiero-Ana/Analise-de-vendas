@@ -157,9 +157,16 @@ while True:
 
 #--------globalsales----------------------------------------------------------------
     elif op == 5:
-        total_vendas = df['Global_Sales'].sum()
-        print('\nA venda global em forma total é de:')
-        print(f'-> Global Sales: {total_vendas}\n')
+        print('Deseja filtrar por venda?')
+        decisao = input('S/N - ')
+
+        if decisao == 'S'.lower():
+            filtro = int(input(''))
+
+        elif decisao == 'N'.lower():
+            total_vendas = df['Global_Sales'].sum()
+            print('\nA venda global em forma total é de:')
+            print(f'-> Global Sales: {total_vendas}\n')
 
 #-----------------------------------------------------------------------------------------
 
