@@ -34,7 +34,7 @@ while True:
         elif op == 2:
             print(f'\nNúmero de linhas:c {df.shape[0]} | Número de colunas: {df.shape[1]}\n')
     if op == 2:
-        print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais')
+        print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais')
         op = int(input('- '))
 
 
@@ -44,3 +44,11 @@ while True:
             jogo_filter = df[df['Year'] == filtro]
             print(f'\nJogos lançados em: {filtro}')
             print(f'{jogo_filter[['Name', 'Rank', 'Year', 'Publisher', 'Genre']]}\n')
+            print(f'\nCom um total de vendas de: {df[df['Year'] == filtro]['Global_Sales'].sum()}')
+
+        # fazer os outros ainda
+        
+        elif op == 5:
+            total_vendas = df['Global_Sales'].sum()
+            print('\nA venda global em forma total é de:')
+            print(f'-> {total_vendas}\n')
