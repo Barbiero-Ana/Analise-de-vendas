@@ -43,7 +43,7 @@ def info_arv():
 def filtro_vendas():
     #--------Filtro de vendas----------------------------------------------------------------
 
-            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n')
+            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n7 - Vendas globais\n')
             op = int(input('- '))
 
             # por ano
@@ -137,6 +137,26 @@ def filtro_vendas():
                         print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 
 
+
+            elif op == 7:
+                print('Deseja filtrar por venda?')
+                decisao = input('S/N - ')
+
+                if decisao == 'S'.lower():
+                    print('\nDigite o valor pelo qual deseja filtrar as vendas globais:')
+                    filtro = float(input('- '))
+                    filter_vendas = df[(df['Global_Sales'] > filtro)]
+                    print(f'\nVendas globais com valores acima de: {filtro}')
+                    print(filter_vendas[['Name', 'Publisher' ,'Global_Sales']])
+                    #fazer função de filtro
+
+                elif decisao == 'N'.lower():
+                    total_vendas = df['Global_Sales'].sum()
+                    print('\nA venda global em forma total é de:')
+                    print(f'-> Global Sales: {total_vendas}\n')
+
+
+
 def listar_games():
 #--------listar os jogs----------------------------------------------------------------
 
@@ -151,24 +171,6 @@ def listar_games():
             n = df['Name'].head(filtro)
             print(f'{n}\n')
         # fazer os outros ainda
-
-
-def global_sales():
-#--------globalsales----------------------------------------------------------------
-        print('Deseja filtrar por venda?')
-        decisao = input('S/N - ')
-
-        if decisao == 'S'.lower():
-            filtro = int(input(''))
-            filter_vendas = df[(df['Global_Sale'] > filtro)]
-            print(f'\nVendas globais com valores acima de: {filtro}')
-            print(filter_vendas[['Name', 'Publisher' ,'Global_Sales']])
-            #fazer função de filtro
-
-        elif decisao == 'N'.lower():
-            total_vendas = df['Global_Sales'].sum()
-            print('\nA venda global em forma total é de:')
-            print(f'-> Global Sales: {total_vendas}\n')
 
 
 
