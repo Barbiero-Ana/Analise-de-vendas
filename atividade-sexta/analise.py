@@ -191,7 +191,6 @@ def filtr_genero():
 
 
 def filtr_ocorren():
-#--------filtrar ocorrencias no arqv---------------------------------------------------
 
     # na op 2 -> colocar uma funcao para que o usuário possa escolher de qual continente ele quer escolher e qual a quantia de jogos com maiores vendas
 
