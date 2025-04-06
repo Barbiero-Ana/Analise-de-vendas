@@ -235,8 +235,20 @@ def filtr_ocorren():
                             for i, row in filter.iterrows():
                                 print(f'- {row['Name']} | {coluna}: {row[coluna]}')
 
-                elif op == 2: # sem filtro de valor
-                    print()
+                elif op == 2: # sem filtro de valor                    
+                    continente = {
+                        'EU_Sales' : 'Europa',
+                        'NA_Sales' : 'América do norte',
+                        'JP_Sales' : 'Japão',
+                        'Other_Sales' : 'Outros países'
+                    }
+                    for coluna, nome in continente.items():
+                        vendas = df.loc[df[coluna].idxmax()] # pega a linha com maior venda 
+                        print(f'\nJogo com maiore número de vendas em: {nome}')
+                        print(f'- {vendas['Name']} | {coluna} : {vendas[coluna]}')
+
+
+
 
         elif op == 2: #global
             print()
