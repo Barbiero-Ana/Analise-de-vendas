@@ -247,11 +247,13 @@ def filtr_ocorren():
                         print(f'\nJogo com maiore número de vendas em: {nome}')
                         print(f'- {vendas['Name']} | {coluna} : {vendas[coluna]}')
 
-
-
-
         elif op == 2: #global
-            print()
+            print('Deseja filtrar por:\n1 - Valor\n2 - Maior ocorrência')
+            op = int(input('- '))
+            if op == 1: # com filtro de valor
+                print()
+            elif op == 2: #sem filtro de valor, pegar apenas as maiores ocorrencias
+                print()
 
 
             
