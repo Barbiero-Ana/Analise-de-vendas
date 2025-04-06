@@ -43,7 +43,6 @@ def info_arv():
 
 
 #--------Filtro de vendas----------------------------------------------------------------
-
 def filtro_vendas():
             print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n7 - Vendas globais\n')
             op = int(input('- '))
@@ -192,7 +191,25 @@ def filtr_ocorren():
 
         print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas (por continente)\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
 
+        op = int(input('- '))
 
+        if op == 1:
+            print('\nDeseja escolher uma quantia em especifico ou apenas o que de fato mais aparece?')
+            op = input('S/N - ')
+
+            if op == 'S'.lower():
+                n = int(input('Deseja ver quantas editoras que mais aparecem no documento: '))
+                m_freq = df['Publisher'].value_counts().head(n) 
+                qtd = df['Publisher'].value_counts().max()
+                for i, (Publisher, qtd) in enumerate(m_freq.items(), start=1):
+                    print(f'{i}º {Publisher} | Apareceu: {qtd} vezes')
+
+            elif op == 'N':
+                m_freq = df['Publisher'].value_counts().idxmax() #o id max retorna o indice de maior valor -> quem mais apareceu
+                qtd = df['Publisher'].value_counts().max()
+                print(f'A editora/ empresa que mais aparece é: {m_freq} | Apareceu: {qtd} vezes')
+
+            
 
 
 
