@@ -204,7 +204,7 @@ def filtr_ocorren():
                 for i, (Publisher, qtd) in enumerate(m_freq.items(), start=1):
                     print(f'{i}º {Publisher} | Apareceu: {qtd} vezes')
 
-            elif op == 'N':
+            elif op == 'N'.lower():
                 m_freq = df['Publisher'].value_counts().idxmax() #o id max retorna o indice de maior valor -> quem mais apareceu
                 qtd = df['Publisher'].value_counts().max()
                 print(f'A editora/ empresa que mais aparece é: {m_freq} | Apareceu: {qtd} vezes')
