@@ -189,7 +189,7 @@ def filtr_ocorren():
 
     # na op 2 -> colocar uma funcao para que o usuário possa escolher de qual continente ele quer escolher e qual a quantia de jogos com maiores vendas
 
-        print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas (por continente)\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
+        print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas (por continente e/ou globais)\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
 
         op = int(input('- '))
 
@@ -208,6 +208,24 @@ def filtr_ocorren():
                 m_freq = df['Publisher'].value_counts().idxmax() #o id max retorna o indice de maior valor -> quem mais apareceu
                 qtd = df['Publisher'].value_counts().max()
                 print(f'A editora/ empresa que mais aparece é: {m_freq} | Apareceu: {qtd} vezes')
+
+        elif op == 2:
+            print('Deseja ver maiores vendas por:\n1 - continente\n2 - global')
+            op = int(input('- '))
+            if op == 1:
+                print('Deseja filtrar por:\n1 - valor\n2 - maior ocorrencia de vendas')
+                op = int(input('- '))
+                if op == 1: # com filtro de valor
+                    n = float(input('Digite qual o valor que deseja filtrar a busca: ')
+
+                    
+                elif op == 2: # sem filtro de valor
+                    
+
+            elif op == 2: #global
+                
+                    
+
 
             
 
