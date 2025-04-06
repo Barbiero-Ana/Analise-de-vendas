@@ -212,19 +212,34 @@ def filtr_ocorren():
         elif op == 2:
             print('Deseja ver maiores vendas por:\n1 - continente\n2 - global')
             op = int(input('- '))
-            if op == 1:
+            if op == 1: # continente
                 print('Deseja filtrar por:\n1 - valor\n2 - maior ocorrencia de vendas')
                 op = int(input('- '))
+
                 if op == 1: # com filtro de valor
-                    n = float(input('Digite qual o valor que deseja filtrar a busca: ')
+                    n = float(input('Digite qual o valor que deseja filtrar a busca: '))
+                    continente = {
+                        'EU_Sales' : 'Europa',
+                        'NA_Sales' : 'América do norte',
+                        'JP_Sales' : 'Japão',
+                        'Other_Sales' : 'Outros países'
+                    }
 
-                    
+                    for coluna, nome in continente.items():
+                        filter = df[df[coluna] > n][['Name', coluna]]
+                        print(f'\nJogos com vendas acima de: {n} em {nome}\n')
+
+                        if filter.empty:
+                            print('Nenhum jogo encontrado')
+                        else:
+                            for i, row in filter.iterrows():
+                                print(f'- {row['Name']} | {coluna}: {row[coluna]}')
+
                 elif op == 2: # sem filtro de valor
-                    
+                    print()
 
-            elif op == 2: #global
-                
-                    
+        elif op == 2: #global
+            print()
 
 
             
