@@ -20,6 +20,8 @@ pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabeca
 # if 6 -> pesquisar o jogo por genero
 
 
+
+
 #--------info do arqv----------------------------------------------------------------
 def info_arv():
         print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - Ver tipos de dados do arquivo\n4 - #pensando ainda.... ')
@@ -248,15 +250,8 @@ def filtr_ocorren():
                         print(f'- {vendas['Name']} | {coluna} : {vendas[coluna]}')
 
         elif op == 2: #global
-            print('Deseja filtrar por:\n1 - Valor\n2 - Maior ocorrência')
-            op = int(input('- '))
-            if op == 1: # com filtro de valor
-                print()
-            elif op == 2: #sem filtro de valor, pegar apenas as maiores ocorrencias
-                print()
+            print() # -> apenas por pela maior ocorrencia no ocumento, pois na opcao de vendas já existe a funcao de filtrar por valor 
 
-
-            
 
 
 
