@@ -9,7 +9,6 @@ pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabeca
 
 # -> Considerar ideia de trocar os if/else por match case
 
-# if 3 -> dar opcao de escolher a quantia de jogos que quer listar
 
 # if 2 -> dar a opcao de filtrar as vendas e deixar o usuário escolher o tipo do filtro
 
@@ -18,6 +17,8 @@ pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabeca
 # if 5 -> mostrar jogos publicados pela nintendo na (a pessoa escolhe eua ou EU sales) acima de 10 milhoes extra: deixar o usuario escolher se quer nintendo ou outra empresa
 
 # if 6 -> pesquisar o jogo por genero
+
+# o global sales é a soma de todas as outras vendas (eu_sales, na_sales, jp_sales)
 
 
 
@@ -42,8 +43,6 @@ def info_arv():
 
 
 
-
-
 #--------Filtro de vendas----------------------------------------------------------------
 def filtro_vendas():
             print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n7 - Vendas globais\n')
@@ -65,15 +64,17 @@ def filtro_vendas():
                 print(f'Jogos lançados por: {name}')
                 print(f'{jogo_filter[['Name', 'Publisher']]}')
 
-
-                # fazer o 3 ainda
+            elif op == 3:
+                valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
+                regioes = ['JP_Sales', 'EU_Sales', 'NA_Sales', 'Other_Sales']
+                filter = df[df[regioes].get()]
 
             # continente
             elif op == 4:
                 print('\nDigite qual continente deseja ver:\n1 - EU_Sales\n2 - NA_Sales\n3 - JP_Sales\n4 - Others')
                 op = int(input('- '))
                 if op == 1:
-                    vendas = 'EU_Sales'
+                    # vendas = 'EU_Sales'
                     decision = input('Deseja filtrar por vendas?\n (S/N): ')
                     if decision == 'S'.lower():
                         valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
@@ -88,7 +89,7 @@ def filtro_vendas():
                         print(filter_vendas[['Name', 'Publisher' ,'EU_Sales']])
 
                 elif op == 2:
-                    vendas = 'NA_Sales'
+                    # vendas = 'NA_Sales'
                     decision = input('Deseja filtrar por vendas?\n (S/N): ')
                     if decision == 'S'.lower():
                         valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
@@ -103,7 +104,7 @@ def filtro_vendas():
                         print(filter_vendas[['Name', 'Publisher' ,'NA_Sales']])
                 
                 elif op == 3:
-                    vendas = 'JP_Sales'
+                    # vendas = 'JP_Sales'
                     decision = input('Deseja filtrar por vendas?\n (S/N): ')
 
                     if decision.lower() == 's'.lower():
@@ -125,7 +126,7 @@ def filtro_vendas():
 
 
                 elif op == 4:
-                    vendas = 'Other_Sales'
+                    # vendas = 'Other_Sales'
                     decision = input('Deseja filtrar por vendas?\n (S/N): ')
                     if decision == 'S'.lower():
                         valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
@@ -185,6 +186,7 @@ def filtr_genero():
         filter_games = df[df['Genre'] == filtro]
         print(f'\nJogos do gênero: {filtro}:')
         print(filter_games[['Genre','Name', 'Publisher' ]])
+
 
 # ---------------------- Ocorrencias ----------------------------------------------
 def filtr_ocorren():
