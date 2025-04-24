@@ -145,7 +145,7 @@ def filtro_vendas():
                     print('\nDigite o valor pelo qual deseja filtrar as vendas globais:')
                     filtro = float(input('- '))
                     filter_vendas = df[(df['Global_Sales'] > filtro)]
-                    print(f'\nVendas globais com valores acima de: {filtro}')
+                    print(f'\nVendas globais com valores acima de: {filtro} milhões')
                     print(filter_vendas[['Name', 'Publisher' ,'Global_Sales']])
                     
 
@@ -219,7 +219,7 @@ def filtr_ocorren():
 
     # na op 2 -> colocar uma funcao para que o usuário possa escolher de qual continente ele quer escolher e qual a quantia de jogos com maiores vendas
 
-        print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas (por continente e/ou globais)\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
+        print('Qual ocorrência deseja verificar:\n1 - Qual editora mais aparece no documento\n2 - Quais são os jogos com maiores vendas\n3 - Diferença de venda entre continentes\n4 - Qual gênero tem o maior total de vendas globais\n5 - ')
 
         op = int(input('- '))
 
@@ -240,7 +240,7 @@ def filtr_ocorren():
                 print(f'A editora/ empresa que mais aparece é: {m_freq} | Apareceu: {qtd} vezes')
 
         elif op == 2:
-            print('Deseja ver maiores vendas por:\n1 - continente\n2 - global')
+            print('Deseja ver maiores vendas por:\n1 - continente\n2 - global\n3 - Por genêro')
             op = int(input('- '))
             if op == 1: # continente
                 print('Deseja filtrar por:\n1 - valor\n2 - maior ocorrencia de vendas')
@@ -276,6 +276,10 @@ def filtr_ocorren():
                         vendas = df.loc[df[coluna].idxmax()] # pega a linha com maior venda 
                         print(f'\nJogo com maiore número de vendas em: {nome}')
                         print(f'- {vendas['Name']} | {coluna} : {vendas[coluna]}')
+
+                elif op == 3:
+                    # inserir uma opcao para que seja possivel ver o total de vendas globais a partir de um genero em especifico
+                    print('Deseja filtrar por\n1 - continente\n2 - Vendas globais')
 
             elif op == 2: #global
             # -> apenas por pela maior ocorrencia no ocumento, pois na opcao de vendas já existe a funcao de filtrar por valor 
