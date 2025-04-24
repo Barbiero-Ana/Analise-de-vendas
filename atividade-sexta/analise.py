@@ -8,22 +8,13 @@ pd.set_option('display.max_columns', None)  # mostra todas as colunas (tira os .
 pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabecalhos (tira os ... que o pandas resume)
 
 # -> Considerar ideia de trocar os if/else por match case
-
-
-# if 2 -> dar a opcao de filtrar as vendas e deixar o usuário escolher o tipo do filtro
-
 # if 4 -> Lancamento de jogos e deixar a pessoa poder escolher o filtro de quando foi lancado (ano)
-
-# if 5 -> mostrar jogos publicados pela nintendo na (a pessoa escolhe eua ou EU sales) acima de 10 milhoes extra: deixar o usuario escolher se quer nintendo ou outra empresa
-
-# if 6 -> pesquisar o jogo por genero
-
 # o global sales é a soma de todas as outras vendas (eu_sales, na_sales, jp_sales)
 
 
 
 
-#--------info do arqv----------------------------------------------------------------
+#-------- info do arqv op 1 ------------------------------------------
 def info_arv():
         print('\nDeseja ver o que?\n1 - Titulo das colunas\n2 - Número de linhas e colunas\n3 - Ver tipos de dados do arquivo\n4 - #pensando ainda.... ')
         op = int(input('- '))
@@ -43,7 +34,7 @@ def info_arv():
 
 
 
-#--------Filtro de vendas----------------------------------------------------------------
+#-------- Filtro de vendas op 2 -------------------------------------
 def filtro_vendas():
             print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n7 - Vendas globais\n')
             op = int(input('- '))
@@ -64,10 +55,16 @@ def filtro_vendas():
                 print(f'Jogos lançados por: {name}')
                 print(f'{jogo_filter[['Name', 'Publisher']]}')
 
+            #por valor de venda
             elif op == 3:
                 valor_venda = float(input('\nDigite o valor da venda para poder filtrar: '))
                 regioes = ['JP_Sales', 'EU_Sales', 'NA_Sales', 'Other_Sales']
-                filter = df[df[regioes].get()]
+                filter = df[df[regioes].gt(valor_venda).any(axis=1)]
+
+                for _, linha in filter.iterrows():
+                    print(f'Jogo: {linha['Name']}\nEmpresa: {linha['Publisher']}\nNº de vendas:')
+                    for coluna in regioes:
+                        print(f'{coluna} : {linha[coluna]} milhões\n')
 
             # continente
             elif op == 4:
@@ -140,6 +137,18 @@ def filtro_vendas():
                         print(f'\nVendas da empresa: {empresa} em outras vendas')
                         print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 
+            # filtrando por jogos mais vendidos
+            elif op == 6:
+                print('\nDeseja escolher uma quantia em especifico ou apenas o jogo que mais aparece?')
+                op = input('S/N - ')
+                if op == 'S'.lower():
+                    qtd = int(input('Digite a quantidade que deseja ver: '))
+                    big_vendas = df.sort_values(by='Global_Sales', ascending=False).head(qtd)
+                    for i, row in enumerate(big_vendas.itertuples(), start=1):
+                        print(f'\n{i}º {row.Name} | Empresa: {row.Publisher} | Número de vendas: {row.Global_Sales:.2f} milhões\n')
+                if op == 'N'.lower():
+                    big_venda = df.loc[df['Global_Sales'].idxmax()]
+                    print(f'Segue o jogo mais vendido:\nNome: {big_venda['Name']} | Empresa: {big_venda['Publisher']} | Número de vendas: {big_venda['Global_Sales']:.2f} milhões')
 
             # global sales (quest 15)
             elif op == 7:
@@ -161,7 +170,7 @@ def filtro_vendas():
 
 
 
-#--------listar os jogs----------------------------------------------------------------
+#-------- listar os jogs op 3 ---------------------------------------------
 def listar_games():
         print('\nDigite quantos jogos deseja listar:\n1 - Todos\n2 - inserir quantidade')
         op = int(input('- '))
@@ -176,7 +185,7 @@ def listar_games():
         # fazer os outros ainda
 
 
-#--------filtrar por genero ----------------------------------------------------------------
+#-------- filtrar por genero op 4 ------------------------------------
 def filtr_genero():
         generos = sorted(df['Genre'].unique())
         print('\nGêneros disponiveis:')
@@ -188,7 +197,7 @@ def filtr_genero():
         print(filter_games[['Genre','Name', 'Publisher' ]])
 
 
-# ---------------------- Ocorrencias ----------------------------------------------
+# --------- Ocorrencias op 5 ---------------------------------------
 def filtr_ocorren():
 
     # na op 2 -> colocar uma funcao para que o usuário possa escolher de qual continente ele quer escolher e qual a quantia de jogos com maiores vendas
@@ -251,9 +260,14 @@ def filtr_ocorren():
                         print(f'\nJogo com maiore número de vendas em: {nome}')
                         print(f'- {vendas['Name']} | {coluna} : {vendas[coluna]}')
 
-        elif op == 2: #global
-            print() # -> apenas por pela maior ocorrencia no ocumento, pois na opcao de vendas já existe a funcao de filtrar por valor 
-
+            elif op == 2: #global
+            # -> apenas por pela maior ocorrencia no ocumento, pois na opcao de vendas já existe a funcao de filtrar por valor 
+                continente = {
+                            'Vendas globais' : 'Global_Sales'
+                        }
+                for nome, col in continente.items():
+                    top_venda = df.loc[df[col].idxmax()]
+                    print(f'\n{nome}\nJogo mais vendido: {top_venda['Name']} | Empresa: {top_venda['Publisher']} | Nº de vendas em escala global: {top_venda[col]} milhões')
 
 
 
