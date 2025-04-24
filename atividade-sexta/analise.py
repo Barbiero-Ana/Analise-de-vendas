@@ -137,6 +137,10 @@ def filtro_vendas():
                         print(f'\nVendas da empresa: {empresa} em outras vendas')
                         print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 
+            elif op == 5:
+                soma = df['Global_Sales'].sum()
+                print(f'O número de vendas totais é de: {soma}')
+
             # filtrando por jogos mais vendidos
             elif op == 6:
                 print('\nDeseja escolher uma quantia em especifico ou apenas o jogo que mais aparece?')
@@ -269,6 +273,13 @@ def filtr_ocorren():
                     top_venda = df.loc[df[col].idxmax()]
                     print(f'\n{nome}\nJogo mais vendido: {top_venda['Name']} | Empresa: {top_venda['Publisher']} | Nº de vendas em escala global: {top_venda[col]} milhões')
 
+        elif op == 3:
+            #fazer a dif entre continentes
+            print()
+
+        elif op == 4:
+            # ver qual dos continentes detem o maior numero de vendas globais 
+            print()
 
 
 # ----- MAIN --------------------------------------------------------
