@@ -36,7 +36,7 @@ def info_arv():
 
 #-------- Filtro de vendas op 2 -------------------------------------
 def filtro_vendas():
-            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas totais globais\n6 - Jogos mais vendidos\n7 - Vendas globais\n')
+            print('Como deseja ver?\n1 - Filtrar por ano\n2 - Filtrar por empresa\n3 - Filtrar por número de vendas\n4 - Filtrar por continente\n5 - ver vendas globais\n6 - Jogos mais vendidos\n#pensando ainda...')
             op = int(input('- '))
 
             # por ano
@@ -138,24 +138,6 @@ def filtro_vendas():
                         print(filter_vendas[['Name', 'Publisher' ,'Other_Sales']])
 
             elif op == 5:
-                soma = df['Global_Sales'].sum()
-                print(f'O número de vendas totais é de: {soma}')
-
-            # filtrando por jogos mais vendidos
-            elif op == 6:
-                print('\nDeseja escolher uma quantia em especifico ou apenas o jogo que mais aparece?')
-                op = input('S/N - ')
-                if op == 'S'.lower():
-                    qtd = int(input('Digite a quantidade que deseja ver: '))
-                    big_vendas = df.sort_values(by='Global_Sales', ascending=False).head(qtd)
-                    for i, row in enumerate(big_vendas.itertuples(), start=1):
-                        print(f'\n{i}º {row.Name} | Empresa: {row.Publisher} | Número de vendas: {row.Global_Sales:.2f} milhões\n')
-                if op == 'N'.lower():
-                    big_venda = df.loc[df['Global_Sales'].idxmax()]
-                    print(f'Segue o jogo mais vendido:\nNome: {big_venda['Name']} | Empresa: {big_venda['Publisher']} | Número de vendas: {big_venda['Global_Sales']:.2f} milhões')
-
-            # global sales (quest 15)
-            elif op == 7:
                 print('Deseja filtrar por venda?')
                 decisao = input('S/N - ')
 
@@ -171,6 +153,37 @@ def filtro_vendas():
                     total_vendas = df['Global_Sales'].sum()
                     print('\nA venda global em forma total é de:')
                     print(f'-> Global Sales: {total_vendas}\n')
+
+            # filtrando por jogos mais vendidos
+            elif op == 6:
+                print('\nDeseja escolher uma quantia em especifico ou apenas o jogo que mais aparece?')
+                op = input('S/N - ')
+                if op == 'S'.lower():
+                    qtd = int(input('Digite a quantidade que deseja ver: '))
+                    big_vendas = df.sort_values(by='Global_Sales', ascending=False).head(qtd)
+                    for i, row in enumerate(big_vendas.itertuples(), start=1):
+                        print(f'\n{i}º {row.Name} | Empresa: {row.Publisher} | Número de vendas: {row.Global_Sales:.2f} milhões\n')
+                if op == 'N'.lower():
+                    big_venda = df.loc[df['Global_Sales'].idxmax()]
+                    print(f'Segue o jogo mais vendido:\nNome: {big_venda['Name']} | Empresa: {big_venda['Publisher']} | Número de vendas: {big_venda['Global_Sales']:.2f} milhões')
+
+            # # global sales (quest 15)
+            # elif op == 7:
+            #     print('Deseja filtrar por venda?')
+            #     decisao = input('S/N - ')
+
+            #     if decisao == 'S'.lower():
+            #         print('\nDigite o valor pelo qual deseja filtrar as vendas globais:')
+            #         filtro = float(input('- '))
+            #         filter_vendas = df[(df['Global_Sales'] > filtro)]
+            #         print(f'\nVendas globais com valores acima de: {filtro}')
+            #         print(filter_vendas[['Name', 'Publisher' ,'Global_Sales']])
+                    
+
+            #     elif decisao == 'N'.lower():
+            #         total_vendas = df['Global_Sales'].sum()
+            #         print('\nA venda global em forma total é de:')
+            #         print(f'-> Global Sales: {total_vendas}\n')
 
 
 
