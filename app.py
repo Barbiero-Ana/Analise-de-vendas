@@ -49,6 +49,8 @@ def inf_arv(op):
                 st.write(f'**Total de vendas globais: {jogo_filter['Global_Sales'].sum():.2f} milhões')
 
 def filtro_vendas(op):
+
+    st.header('Filtros de Vendas')
     op = st.selectbox('Selecione uma opção:', [
         'Filtrar jogos por ano', 
         'Filtrar jogos por empresa',
@@ -57,4 +59,80 @@ def filtro_vendas(op):
         'Ver vendas globais',
         'Filtrar por jogos mais vendidos'
     ])
-    
+
+    match op:
+        case 'Filtrar jogos por ano':
+            ano = st.number_input('Digite o ano:', min_value=1980, max_value=2020, step=1)
+            if st.button('Filtrar'):
+                jogo_filter = df[df['Year'] == ano]
+                st.write(f'**Jogos lançados em {ano}:**')
+                st.dataframe(jogo_filter[['Name', 'Rank', 'Year', 'Publisher', 'Genre']])
+                st.write(f'**Total de vendas globais:** {jogo_filter['Global_Sales'].sum():.2f} milhões')
+        case 'Filtrar jogos por empresa':
+            empresa = st.text_input('Digite o nome da empresa:')
+            if st.button('Filtrar'):
+                jogo_filter = df[df['Publisher'] == empresa]
+                st.write(f'**Jogos lançados por {empresa}:**')
+                st.dataframe(jogo_filter[['Name', 'Publisher']])
+        case 'Filtrar jogos por número de vendas':
+            valor_venda = st.number_input('Digite o valor mínimo de vendas (em milhões):', min_value=0.0, step=0.1)
+            if st.button('Filtrar'):
+                regioes = ['JP_Sales', 'EU_Sales', 'NA_Sales', 'Other_Sales']
+                filtro = df[df[regioes].gt(valor_venda).any(axis=1)]
+                st.write('**Jogos com vendas acima do valor especificado:**')
+                for _, linha in filtro.iterrows():
+                    st.write(f'**Jogo:** {linha['Name']} | **Empresa:** {linha['Publisher']}')
+                    for coluna in regioes:
+                        st.write(f'{coluna}: {linha[coluna]} milhões')
+        case 'Filtrar por continente':
+            continente = st.selectbox('Selecione o continente:', ['EU_Sales', 'NA_Sales', 'JP_Sales', 'Other_Sales'])
+            empresa = st.text_input('Digite o nome da empresa:')
+            filtrar_vendas = st.checkbox('Filtrar por valor de vendas?')
+            if filtrar_vendas:
+                valor_venda = st.number_input('Digite o valor mínimo de vendas (em milhões):', min_value=0.0, step=0.1)
+            if st.button('Filtrar'):
+                filtro = df[df['Publisher'] == empresa]
+                if filtrar_vendas:
+                    filtro = filtro[filtro[continente] > valor_venda]
+                    st.write(f'**Vendas de {empresa} em {continente} acima de {valor_venda} milhões:**')
+                else:
+                    st.write(f'**Vendas de {empresa} em {continente}:**')
+                st.dataframe(filtro[['Name', 'Publisher', continente]])
+        case 'Ver vendas globais':
+            filtrar = st.checkbox('Filtrar por valor de vendas?')
+            if filtrar:
+                valor = st.number_input('Digite o valor mínimo de vendas globais (em milhões):', min_value=0.0, step=0.1)
+                if st.button('Filtrar'):
+                    filtro = df[df['Global_Sales'] > valor]
+                    st.write(f'**Vendas globais acima de {valor} milhões:**')
+                    st.dataframe(filtro[['Name', 'Publisher', 'Global_Sales']])
+            else:
+                total_vendas = df['Global_Sales'].sum()
+                st.write(f'**Total de vendas globais:** {total_vendas:.2f} milhões')
+        case 'Filtrar por jogos mais vendidos':
+            filtrar_qtd = st.checkbox('Filtrar por quantidade específica?')
+            if filtrar_qtd:
+                qtd = st.number_input('Digite a quantidade de jogos:', min_value=1, step=1)
+                if st.button('Filtrar'):
+                    big_vendas = df.sort_values(by='Global_Sales', ascending=False).head(qtd)
+                    st.write(f'**Top {qtd} jogos mais vendidos:**')
+                    st.dataframe(big_vendas[['Name', 'Publisher', 'Global_Sales']])
+                    fig = px.bar(big_vendas, x='Name', y='Global_Sales', title='Top Jogos por Vendas Globais')
+                    st.plotly_chart(fig)
+            else:
+                big_venda = df.loc[df['Global_Sales'].idxmax()]
+                st.write(f'**Jogo mais vendido:** {big_venda['Name']} | **Empresa:** {big_venda['Publisher']} | **Vendas:** {big_venda['Global_Sales']:.2f} milhões')
+
+def listar_games(op):
+
+    op = st.selectbox('Selecione uma opção:', [
+        'Todos os jogos',
+        'Quantidade de jogos em especifico'
+    ])
+
+    match op:
+        case 'Todos os jogos':
+            st.write('**Lista de todos os jogos:**')
+            st.dataframe(df[['Name']])
+        case 'Quantidade de jogos em especifico':
+            qtd = st.number_input('')
