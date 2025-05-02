@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 import os
 
 # Configuração da página
@@ -37,7 +38,7 @@ op = st.sidebar.selectbox('Escolha a opção que lhe atende', [
 st.title('Análise de Venda de Games')
 st.markdown('Uma análise realizada com base em dados fornecidos pela CyberEdux')
 
-# CSS personalizado para cartões de métricas e detalhes de jogos
+# CSS personalizado para cartões de métricas, detalhes de jogos e animações
 st.markdown("""
     <style>
     .metric-card {
@@ -47,6 +48,7 @@ st.markdown("""
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         margin-bottom: 10px;
         color: white;
+        animation: fadeIn 0.5s ease-in;
     }
     .metric-card h3 {
         margin: 0;
@@ -80,7 +82,52 @@ st.markdown("""
         0% { opacity: 0; transform: translateY(10px); }
         100% { opacity: 1; transform: translateY(0); }
     }
+    .counter {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #FFFFFF;
+    }
+    .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+    }
+    .tooltip .tooltiptext {
+        visibility: hidden;
+        width: 200px;
+        background-color: #4CAF50;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -100px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+        opacity: 1;
+    }
     </style>
+    <script>
+    function animateValue(id, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            document.getElementById(id).innerText = value.toLocaleString();
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+    </script>
 """, unsafe_allow_html=True)
 
 def inf_arv():
@@ -93,32 +140,174 @@ def inf_arv():
     ], key='inf_option')
     
     if op == 'Título das colunas':
-        st.subheader('Colunas do Arquivo')
-        st.markdown('Lista de todas as colunas disponíveis no conjunto de dados.')
+        st.subheader('Colunas do Conjunto de Dados')
+        st.markdown('Explore os nomes das colunas que descrevem os atributos dos jogos no dataset.')
+        
+        # Opção para alternar entre visualizações
+        view_mode = st.radio(
+            'Escolha o modo de visualização:',
+            ['Tabela Interativa', 'Cartões'],
+            key='columns_view_mode'
+        )
+        
+        # Dados das colunas
         columns_df = pd.DataFrame({
             'Índice': range(1, len(column_names) + 1),
-            'Nome da Coluna': column_names
+            'Nome da Coluna': column_names,
+            'Descrição': [
+                'Posição do jogo no ranking' if col == 'Rank' else
+                'Nome do jogo' if col == 'Name' else
+                'Plataforma do jogo' if col == 'Platform' else
+                'Ano de lançamento' if col == 'Year' else
+                'Gênero do jogo' if col == 'Genre' else
+                'Editora do jogo' if col == 'Publisher' else
+                'Vendas na América do Norte (milhões)' if col == 'NA_Sales' else
+                'Vendas na Europa (milhões)' if col == 'EU_Sales' else
+                'Vendas no Japão (milhões)' if col == 'JP_Sales' else
+                'Vendas em outras regiões (milhões)' if col == 'Other_Sales' else
+                'Vendas globais (milhões)' if col == 'Global_Sales' else
+                'Descrição não disponível'
+                for col in column_names
+            ]
         })
-        styled_df = columns_df.style.set_properties(**{
-            'background-color': '#4F1C51',
-            'color': 'white',
-            'text-align': 'left',
-            'border-color': '#d3d3d3',
-            'border-style': 'solid',
-            'border-width': '1px'
-        }).set_table_styles([
-            {'selector': 'th', 'props': [('background-color', '#4CAF50'), ('color', 'white'), ('font-weight', 'bold')]}
-        ])
-        st.dataframe(styled_df, use_container_width=True)
+        
+        if view_mode == 'Tabela Interativa':
+            # Tabela interativa com Plotly
+            table = go.Figure(data=[go.Table(
+                header=dict(
+                    values=['Índice', 'Nome da Coluna', 'Descrição'],
+                    fill_color='#4CAF50',
+                    font=dict(color='white', size=12),
+                    align='left'
+                ),
+                cells=dict(
+                    values=[columns_df['Índice'], columns_df['Nome da Coluna'], columns_df['Descrição']],
+                    fill_color=[['#4F1C51' if i % 2 == 0 else '#6B2D6D' for i in range(len(columns_df))]],
+                    font=dict(color='white', size=12),
+                    align='left'
+                )
+            )])
+            table.update_layout(
+                title_text='Lista de Colunas do Dataset',
+                title_x=0.5,
+                margin=dict(t=50, b=50),
+                paper_bgcolor='rgba(0,0,0,0)',
+                autosize=True
+            )
+            st.plotly_chart(table, use_container_width=True)
+        
+        else:
+            # Visualização em cartões
+            st.markdown('**Colunas apresentadas em cartões interativos**')
+            for _, row in columns_df.iterrows():
+                st.markdown(f"""
+                    <div class="metric-card tooltip">
+                        <h3>{row['Índice']}. {row['Nome da Coluna']}</h3>
+                        <p>{row['Descrição']}</p>
+                        <span class="tooltiptext">Clique para ver mais detalhes</span>
+                    </div>
+                """, unsafe_allow_html=True)
+                with st.expander(f"Detalhes da coluna: {row['Nome da Coluna']}"):
+                    st.write(f"**Índice:** {row['Índice']}")
+                    st.write(f"**Nome:** {row['Nome da Coluna']}")
+                    st.write(f"**Descrição:** {row['Descrição']}")
+                    st.write(f"**Valores Não Nulos:** {df[row['Nome da Coluna']].notnull().sum():,}")
+                    st.write(f"**Tipo de Dado:** {str(df[row['Nome da Coluna']].dtype)}")
     
     elif op == 'Número de linhas e colunas':
-        st.subheader('Dimensões do Arquivo')
-        st.markdown('Informações sobre o tamanho do conjunto de dados.')
-        col1, col2 = st.columns(2)
+        st.subheader('Dimensões do Conjunto de Dados')
+        st.markdown('Descubra o tamanho do dataset com uma visualização dinâmica e interativa.')
+        
+        # Layout em três colunas
+        col1, col2, col3 = st.columns([1, 1, 1])
+        
+        # Número de linhas
         with col1:
-            st.metric(label="Número de Linhas", value=f"{df.shape[0]:,}")
+            st.markdown(f"""
+                <div class="metric-card">
+                    <h3>📊 Número de Linhas</h3>
+                    <p><span id="row_counter" class="counter">0</span></p>
+                </div>
+                <script>
+                    animateValue("row_counter", 0, {df.shape[0]}, 1500);
+                </script>
+            """, unsafe_allow_html=True)
+            # Gauge para número de linhas
+            fig_rows = px.pie(
+                values=[df.shape[0], max(100000 - df.shape[0], 0)],
+                names=['Linhas', 'Máximo'],
+                hole=0.4,
+                color_discrete_sequence=['#4CAF50', '#E0E0E0']
+            )
+            fig_rows.update_traces(
+                textinfo='none',
+                hovertemplate='%{label}: %{value:,}<br>%{percent}'
+            )
+            fig_rows.update_layout(
+                title='Proporção de Linhas (máx. 100,000)',
+                showlegend=False,
+                height=200,
+                margin=dict(t=50, b=0, l=0, r=0)
+            )
+            st.plotly_chart(fig_rows, use_container_width=True)
+        
+        # Número de colunas
         with col2:
-            st.metric(label="Número de Colunas", value=df.shape[1])
+            st.markdown(f"""
+                <div class="metric-card">
+                    <h3>📈 Número de Colunas</h3>
+                    <p><span id="col_counter" class="counter">0</span></p>
+                </div>
+                <script>
+                    animateValue("col_counter", 0, {df.shape[1]}, 1500);
+                </script>
+            """, unsafe_allow_html=True)
+            # Gauge para número de colunas
+            fig_cols = px.pie(
+                values=[df.shape[1], max(50 - df.shape[1], 0)],
+                names=['Colunas', 'Máximo'],
+                hole=0.4,
+                color_discrete_sequence=['#2196F3', '#E0E0E0']
+            )
+            fig_cols.update_traces(
+                textinfo='none',
+                hovertemplate='%{label}: %{value}<br>%{percent}'
+            )
+            fig_cols.update_layout(
+                title='Proporção de Colunas (máx. 50)',
+                showlegend=False,
+                height=200,
+                margin=dict(t=50, b=0, l=0, r=0)
+            )
+            st.plotly_chart(fig_cols, use_container_width=True)
+        
+        # Resumo
+        with col3:
+            total_cells = df.shape[0] * df.shape[1]
+            st.markdown(f"""
+                <div class="metric-card">
+                    <h3>🔢 Total de Células</h3>
+                    <p><span id="cell_counter" class="counter">0</span></p>
+                </div>
+                <script>
+                    animateValue("cell_counter", 0, {total_cells}, 1500);
+                </script>
+            """, unsafe_allow_html=True)
+            st.markdown(f"""
+                <div class="metric-card">
+                    <h3>🎉 Curiosidade</h3>
+                    <p>Este dataset tem {total_cells:,} células, equivalente a {total_cells // 500:,} páginas de um livro!</p>
+                </div>
+            """, unsafe_allow_html=True)
+        
+        # Expander com visão geral
+        with st.expander("Visão Geral do Dataset"):
+            st.write(f"**Total de Linhas:** {df.shape[0]:,}")
+            st.write(f"**Total de Colunas:** {df.shape[1]}")
+            st.write(f"**Total de Células:** {total_cells:,}")
+            memory_usage = df.memory_usage(deep=True).sum() / (1024 ** 2)  # MB
+            st.write(f"**Uso de Memória:** {memory_usage:.2f} MB")
+            st.write(f"**Tamanho Médio por Linha:** {(memory_usage * 1024 ** 2 / df.shape[0]):.2f} bytes")
     
     elif op == 'Tipos de dados contidos no arquivo analisado':
         st.subheader('Tipos de Dados')
@@ -137,7 +326,7 @@ def inf_arv():
             'border-width': '1px'
         }).set_table_styles([
             {'selector': 'th', 'props': [('background-color', '#2196F3'), ('color', 'white'), ('font-weight', 'bold')]}
-        ]).highlight_max(subset=['Valores Não Nulos'], color='#e6f3e6')
+        ]).highlight_max(subset=['Valores Não Nulos'], color='#4F1C51')
         st.dataframe(styled_dtypes, use_container_width=True)
     
     elif op == 'Lançamentos por ano':
@@ -328,12 +517,7 @@ def filtro_vendas():
                     <p>{total_vendas:.2f} milhões</p>
                 </div>
             """, unsafe_allow_html=True)
-            st.metric(
-                label="Total de Vendas Globais",
-                value=f"{total_vendas:.2f} milhões",
-                delta=f"{total_vendas - avg_sales_per_game * df.shape[0]:+.2f} milhões vs. média esperada",
-                delta_color="normal"
-            )
+            
     
     elif op == 'Filtrar por jogos mais vendidos':
         filtrar_qtd = st.sidebar.checkbox('Filtrar por quantidade específica?', key='vendas_top_sales_checkbox')
@@ -889,7 +1073,7 @@ def metricas_avancadas():
         avg_sales = filtered_df['Global_Sales'].mean()
         avg_sales_all = df['Global_Sales'].mean()
         publisher, count = (filtered_df['Publisher'].value_counts().idxmax(), 
-                          filtered_df['Publisher'].value_counts().max()) if not filtered_df['Publisher'].value_counts().empty else ("N/A", 0)
+                        filtered_df['Publisher'].value_counts().max()) if not filtered_df['Publisher'].value_counts().empty else ("N/A", 0)
         col1, col2 = st.columns(2)
         with col1:
             st.markdown(f"""
@@ -898,24 +1082,14 @@ def metricas_avancadas():
                     <p>{total_games:,}</p>
                 </div>
             """, unsafe_allow_html=True)
-            st.metric(
-                label="Total de Jogos Únicos",
-                value=f"{total_games:,}",
-                delta=f"{total_games - total_games_all:+,}" if total_games != total_games_all else None,
-                delta_color="inverse"
-            )
+            
             st.markdown(f"""
                 <div class="metric-card">
                     <h3>💰 Média Global de Vendas</h3>
                     <p>{avg_sales:.2f} milhões</p>
                 </div>
             """, unsafe_allow_html=True)
-            st.metric(
-                label="Média Global de Vendas por Jogo",
-                value=f"{avg_sales:.2f} milhões",
-                delta=f"{avg_sales - avg_sales_all:+.2f} milhões" if avg_sales != avg_sales_all else None,
-                delta_color="normal"
-            )
+            
             max_avg_sales = df.groupby(df['Year'] // 10 * 10)['Global_Sales'].mean().max()
             progress = min(avg_sales / max_avg_sales, 1.0) if max_avg_sales > 0 else 0
             st.progress(progress)
@@ -927,22 +1101,14 @@ def metricas_avancadas():
                     <p>{oldest_year} - {recent_year}</p>
                 </div>
             """, unsafe_allow_html=True)
-            st.metric(
-                label="Intervalo de Anos",
-                value=f"{oldest_year} - {recent_year}",
-                delta=None
-            )
+            
             st.markdown(f"""
                 <div class="metric-card">
                     <h3>🏢 Editora com Mais Jogos</h3>
                     <p>{publisher} ({count} jogos)</p>
                 </div>
             """, unsafe_allow_html=True)
-            st.metric(
-                label="Editora com Mais Jogos",
-                value=f"{publisher} ({count} jogos)",
-                delta=None
-            )
+            
         st.write("**Resumo das Métricas**")
         summary_data = {
             'Métrica': ['Total de Jogos Únicos', 'Média Global de Vendas', 'Ano Mais Antigo', 'Ano Mais Recente', 'Editora com Mais Jogos'],
@@ -1014,7 +1180,7 @@ def metricas_avancadas():
     
     elif op == 'Top Jogos por Vendas':
         st.subheader('Top Jogos por Vendas')
-        st.markdown('Visualize os jogos mais vendidos com filtros personalizados.')
+        st.markdown('Visualização dos jogos mais vendidos com filtros personalizados.')
         sales_type = st.sidebar.selectbox(
             'Selecione o tipo de vendas:',
             ['Global_Sales', 'NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales'],
@@ -1071,16 +1237,16 @@ def metricas_avancadas():
                     x=sales_type,
                     orientation='h',
                     title=f'Top {n_games} Jogos por {sales_type.replace("_Sales", "")}',
-                    labels={sales_type: 'Vendas (milhões)', 'Name': 'Jogo'},
-                    hover_data=['Name', 'Platform', 'Year'],
-                    text=sales_type
+                    labels={'Name': 'Jogo', sales_type: 'Vendas (milhões)'},
+                    text=sales_type,
+                    color_discrete_sequence=['#FF5722']
                 )
                 fig.update_traces(texttemplate='%{text:.2f}', textposition='auto')
                 fig.update_layout(
-                    yaxis_title='Jogo',
                     xaxis_title='Vendas (milhões)',
-                    height=600,
-                    yaxis={'autorange': 'reversed'}
+                    yaxis_title='Jogo',
+                    height=max(400, n_games * 50),
+                    showlegend=False
                 )
                 st.plotly_chart(fig, use_container_width=True)
             else:
@@ -1088,100 +1254,20 @@ def metricas_avancadas():
     
     elif op == 'Distribuição de Vendas por Região':
         st.subheader('Distribuição de Vendas por Região')
-        st.markdown('Veja como as vendas são distribuídas entre as regiões.')
-        chart_type = st.sidebar.selectbox(
-            'Selecione o tipo de gráfico:',
-            ['Pie Chart', 'Treemap'],
-            key='region_chart_type'
-        )
-        decade = st.sidebar.selectbox(
-            'Filtrar por década:',
-            ['Todas', '1980-1990', '1991-2000', '2001-2010', '2011-2020'],
-            key='region_decade'
-        )
-        if st.sidebar.button('Gerar', key='region_generate_button'):
-            filtered_df = df.copy()
-            if decade != 'Todas':
-                start_year, end_year = map(int, decade.split('-'))
-                filtered_df = filtered_df[(filtered_df['Year'] >= start_year) & (filtered_df['Year'] <= end_year)]
-            sales_data = {
-                'Região': ['NA', 'EU', 'JP', 'Outros'],
-                'Vendas (milhões)': [
-                    filtered_df['NA_Sales'].sum(),
-                    filtered_df['EU_Sales'].sum(),
-                    filtered_df['JP_Sales'].sum(),
-                    filtered_df['Other_Sales'].sum()
-                ]
-            }
-            total_sales = sum(sales_data['Vendas (milhões)'])
-            sales_data['Percentual'] = [100 * sales / total_sales if total_sales > 0 else 0 for sales in sales_data['Vendas (milhões)']]
-            sales_df = pd.DataFrame(sales_data)
-            st.write('**Resumo de vendas por região:**')
-            styled_sales = sales_df.style.set_properties(**{
-                'background-color': '#4F1C51',
-                'color': 'white',
-                'text-align': 'center',
-                'border-color': '#d3d3d3',
-                'border-style': 'solid',
-                'border-width': '1px'
-            }).set_table_styles([
-                {'selector': 'th', 'props': [('background-color', '#2196F3'), ('color', 'white'), ('font-weight', 'bold')]}
-            ]).format({'Vendas (milhões)': '{:.2f}', 'Percentual': '{:.2f}%'})
-            st.dataframe(styled_sales, use_container_width=True)
-            if chart_type == 'Pie Chart':
-                fig = px.pie(
-                    sales_df,
-                    names='Região',
-                    values='Vendas (milhões)',
-                    title='Distribuição de Vendas por Região',
-                    labels={'Vendas (milhões)': 'Vendas (milhões)'},
-                    hover_data=['Percentual']
-                )
-                fig.update_traces(textinfo='percent+label', textposition='inside')
-            else:
-                fig = px.treemap(
-                    sales_df,
-                    path=['Região'],
-                    values='Vendas (milhões)',
-                    title='Distribuição de Vendas por Região',
-                    labels={'Vendas (milhões)': 'Vendas (milhões)'},
-                    hover_data=['Percentual']
-                )
-            fig.update_layout(height=500)
-            st.plotly_chart(fig, use_container_width=True)
-    
-    elif op == 'Popularidade de Gêneros':
-        st.subheader('Popularidade de Gêneros')
-        st.markdown('Compare as vendas de gêneros entre regiões em um intervalo de anos.')
+        st.markdown('Analise de como as vendas se distribuem entre diferentes regiões.')
         regions = st.sidebar.multiselect(
             'Selecione as regiões:',
-            ['NA_Sales', 'EU_Sales', 'JP_Sales'],
-            default=['NA_Sales', 'EU_Sales', 'JP_Sales'],
-            key='genre_regions'
+            ['NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales', 'Global_Sales'],
+            default=['Global_Sales'],
+            key='region_select'
         )
-        year_range = st.sidebar.slider(
-            'Selecione o intervalo de anos:',
-            min_value=1980,
-            max_value=2020,
-            value=(1980, 2020),
-            step=1,
-            key='genre_year_range'
-        )
-        if st.sidebar.button('Gerar', key='genre_generate_button'):
+        if st.sidebar.button('Analisar', key='region_button'):
             if regions:
-                filtered_df = df[(df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1])]
-                sales_data = filtered_df.groupby('Genre').agg({region: 'sum' for region in regions}).reset_index()
-                plot_data = []
-                for _, row in sales_data.iterrows():
-                    for region in regions:
-                        plot_data.append({
-                            'Gênero': row['Genre'],
-                            'Região': region.replace('_Sales', ''),
-                            'Vendas (milhões)': row[region]
-                        })
-                plot_df = pd.DataFrame(plot_data)
-                st.write('**Vendas por gênero e região:**')
-                styled_sales = sales_data.rename(columns={region: region.replace('_Sales', '') for region in regions}).style.set_properties(**{
+                sales_data = df[regions].sum().reset_index()
+                sales_data.columns = ['Região', 'Vendas (milhões)']
+                sales_data['Região'] = sales_data['Região'].str.replace('_Sales', '')
+                st.write('**Total de vendas por região selecionada:**')
+                styled_sales = sales_data.style.set_properties(**{
                     'background-color': '#4F1C51',
                     'color': 'white',
                     'text-align': 'left',
@@ -1190,62 +1276,66 @@ def metricas_avancadas():
                     'border-width': '1px'
                 }).set_table_styles([
                     {'selector': 'th', 'props': [('background-color', '#4CAF50'), ('color', 'white'), ('font-weight', 'bold')]}
-                ]).format({region.replace('_Sales', ''): '{:.2f}' for region in regions})
+                ]).format({'Vendas (milhões)': '{:.2f}'})
                 st.dataframe(styled_sales, use_container_width=True)
-                fig = px.bar(
-                    plot_df,
-                    x='Gênero',
-                    y='Vendas (milhões)',
-                    color='Região',
-                    barmode='stack',
-                    title='Vendas por Gênero e Região',
-                    labels={'Vendas (milhões)': 'Vendas (milhões)', 'Gênero': 'Gênero'},
-                    text='Vendas (milhões)'
+                fig = px.pie(
+                    sales_data,
+                    names='Região',
+                    values='Vendas (milhões)',
+                    title='Distribuição de Vendas por Região',
+                    color_discrete_sequence=['#4CAF50', '#2196F3', '#FF5722', '#FFC107', '#9C27B0']
                 )
-                fig.update_traces(texttemplate='%{text:.2f}', textposition='inside')
-                fig.update_layout(
-                    xaxis_title='Gênero',
-                    yaxis_title='Vendas (milhões)',
-                    height=500
-                )
+                fig.update_traces(textinfo='percent+label', textposition='inside')
+                fig.update_layout(height=400)
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.info('Por favor, selecione pelo menos uma região.')
     
-    elif op == 'Tendências Temporais':
-        st.subheader('Tendências Temporais')
-        st.markdown('Visualize a evolução das vendas globais ao longo dos anos.')
-        sales_by_year = df.groupby('Year')['Global_Sales'].sum().reset_index()
-        sales_by_year = sales_by_year[sales_by_year['Year'].notnull()]
-        fig = px.line(
-            sales_by_year,
-            x='Year',
-            y='Global_Sales',
-            title='Vendas Globais por Ano',
-            labels={'Global_Sales': 'Vendas Globais (milhões)', 'Year': 'Ano'},
-            markers=True
+    elif op == 'Popularidade de Gêneros':
+        st.subheader('Popularidade de Gêneros')
+        metric = st.sidebar.selectbox(
+            'Selecione a métrica:',
+            ['Número de Jogos', 'Vendas Globais'],
+            key='genre_metric'
         )
-        fig.update_layout(
-            xaxis_title='Ano',
-            yaxis_title='Vendas Globais (milhões)',
-            height=500
-        )
-        st.plotly_chart(fig, use_container_width=True)
-    
-    elif op == 'Busca de Jogos':
-        st.subheader('Busca de Jogos')
-        st.markdown('Digite o nome do jogo para ver detalhes e análise de vendas.')
-        search_query = st.sidebar.text_input('Digite o nome do jogo:', key='search_game')
-        chart_type = st.sidebar.selectbox(
-            'Selecione o tipo de gráfico:',
-            ['Bar Chart', 'Pie Chart'],
-            key='search_chart_type'
-        )
-        if search_query:
-            filtered_df = df[df['Name'].str.contains(search_query, case=False, na=False)]
-            if not filtered_df.empty:
-                st.write(f'**Resultados para: {search_query}**')
-                styled_results = filtered_df[['Name', 'Rank', 'Year', 'Publisher', 'Genre', 'Platform', 'Global_Sales', 'NA_Sales', 'EU_Sales', 'JP_Sales', 'Other_Sales']].style.set_properties(**{
+        if st.sidebar.button('Analisar', key='genre_button'):
+            if metric == 'Número de Jogos':
+                genre_counts = df['Genre'].value_counts().reset_index()
+                genre_counts.columns = ['Gênero', 'Quantidade']
+                st.write('**Número de jogos por gênero:**')
+                styled_genres = genre_counts.style.set_properties(**{
+                    'background-color': '#4F1C51',
+                    'color': 'white',
+                    'text-align': 'left',
+                    'border-color': '#d3d3d3',
+                    'border-style': 'solid',
+                    'border-width': '1px'
+                }).set_table_styles([
+                    {'selector': 'th', 'props': [('background-color', '#2196F3'), ('color', 'white'), ('font-weight', 'bold')]}
+                ])
+                st.dataframe(styled_genres, use_container_width=True)
+                fig = px.bar(
+                    genre_counts,
+                    x='Quantidade',
+                    y='Gênero',
+                    orientation='h',
+                    title='Popularidade de Gêneros por Número de Jogos',
+                    labels={'Quantidade': 'Número de Jogos', 'Gênero': 'Gênero'},
+                    text='Quantidade',
+                    color_discrete_sequence=['#2196F3']
+                )
+                fig.update_traces(texttemplate='%{text:.0f}', textposition='auto')
+                fig.update_layout(
+                    xaxis_title='Número de Jogos',
+                    yaxis_title='Gênero',
+                    height=max(400, len(genre_counts) * 30),
+                    showlegend=False
+                )
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                genre_sales = df.groupby('Genre')['Global_Sales'].sum().reset_index()
+                st.write('**Vendas globais por gênero:**')
+                styled_sales = genre_sales.style.set_properties(**{
                     'background-color': '#4F1C51',
                     'color': 'white',
                     'text-align': 'left',
@@ -1254,54 +1344,142 @@ def metricas_avancadas():
                     'border-width': '1px'
                 }).set_table_styles([
                     {'selector': 'th', 'props': [('background-color', '#FF5722'), ('color', 'white'), ('font-weight', 'bold')]}
-                ]).format({
-                    'Global_Sales': '{:.2f}',
-                    'NA_Sales': '{:.2f}',
-                    'EU_Sales': '{:.2f}',
-                    'JP_Sales': '{:.2f}',
-                    'Other_Sales': '{:.2f}'
-                })
-                st.dataframe(styled_results, use_container_width=True)
-                sales_data = {
-                    'Região': ['Global', 'NA', 'EU', 'JP', 'Outros'],
-                    'Vendas (milhões)': [
-                        filtered_df['Global_Sales'].sum(),
-                        filtered_df['NA_Sales'].sum(),
-                        filtered_df['EU_Sales'].sum(),
-                        filtered_df['JP_Sales'].sum(),
-                        filtered_df['Other_Sales'].sum()
-                    ]
-                }
-                sales_df = pd.DataFrame(sales_data)
-                if chart_type == 'Bar Chart':
-                    fig = px.bar(
-                        sales_df,
-                        x='Região',
-                        y='Vendas (milhões)',
-                        title=f'Vendas de Jogos Correspondentes a "{search_query}"',
-                        labels={'Vendas (milhões)': 'Vendas (milhões)', 'Região': 'Região'},
-                        text='Vendas (milhões)'
-                    )
-                    fig.update_traces(texttemplate='%{text:.2f}', textposition='auto')
-                else:
-                    fig = px.pie(
-                        sales_df,
-                        names='Região',
-                        values='Vendas (milhões)',
-                        title=f'Vendas de Jogos Correspondentes a "{search_query}"',
-                        labels={'Vendas (milhões)': 'Vendas (milhões)'}
-                    )
-                    fig.update_traces(textinfo='percent+label', textposition='inside')
+                ]).format({'Global_Sales': '{:.2f}'})
+                st.dataframe(styled_sales, use_container_width=True)
+                fig = px.bar(
+                    genre_sales,
+                    x='Global_Sales',
+                    y='Genre',
+                    orientation='h',
+                    title='Popularidade de Gêneros por Vendas Globais',
+                    labels={'Global_Sales': 'Vendas (milhões)', 'Genre': 'Gênero'},
+                    text='Global_Sales',
+                    color_discrete_sequence=['#FF5722']
+                )
+                fig.update_traces(texttemplate='%{text:.2f}', textposition='auto')
                 fig.update_layout(
-                    xaxis_title='Região',
-                    yaxis_title='Vendas (milhões)',
-                    height=500
+                    xaxis_title='Vendas (milhões)',
+                    yaxis_title='Gênero',
+                    height=max(400, len(genre_sales) * 30),
+                    showlegend=False
+                )
+                st.plotly_chart(fig, use_container_width=True)
+    
+    elif op == 'Tendências Temporais':
+        st.subheader('Tendências Temporais')
+        metric = st.sidebar.selectbox(
+            'Selecione a métrica:',
+            ['Número de Lançamentos', 'Vendas Globais'],
+            key='temporal_metric'
+        )
+        year_range = st.sidebar.slider(
+            'Selecione o intervalo de anos:',
+            min_value=1980,
+            max_value=2020,
+            value=(1980, 2020),
+            step=1,
+            key='temporal_year_range'
+        )
+        if st.sidebar.button('Analisar', key='temporal_button'):
+            filtered_df = df[(df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1])]
+            if metric == 'Número de Lançamentos':
+                year_counts = filtered_df['Year'].value_counts().sort_index().reset_index()
+                year_counts.columns = ['Ano', 'Quantidade']
+                st.write(f'**Número de lançamentos por ano ({year_range[0]} a {year_range[1]}):**')
+                styled_years = year_counts.style.set_properties(**{
+                    'background-color': '#4F1C51',
+                    'color': 'white',
+                    'text-align': 'left',
+                    'border-color': '#d3d3d3',
+                    'border-style': 'solid',
+                    'border-width': '1px'
+                }).set_table_styles([
+                    {'selector': 'th', 'props': [('background-color', '#4CAF50'), ('color', 'white'), ('font-weight', 'bold')]}
+                ])
+                st.dataframe(styled_years, use_container_width=True)
+                fig = px.line(
+                    year_counts,
+                    x='Ano',
+                    y='Quantidade',
+                    title=f'Número de Lançamentos por Ano ({year_range[0]} a {year_range[1]})',
+                    labels={'Quantidade': 'Número de Lançamentos', 'Ano': 'Ano'},
+                    markers=True,
+                    color_discrete_sequence=['#4CAF50']
+                )
+                fig.update_layout(
+                    xaxis_title='Ano',
+                    yaxis_title='Número de Lançamentos',
+                    height=400
                 )
                 st.plotly_chart(fig, use_container_width=True)
             else:
-                st.warning(f'Nenhum jogo encontrado para "{search_query}".')
+                year_sales = filtered_df.groupby('Year')['Global_Sales'].sum().reset_index()
+                st.write(f'**Vendas globais por ano ({year_range[0]} a {year_range[1]}):**')
+                styled_sales = year_sales.style.set_properties(**{
+                    'background-color': '#4F1C51',
+                    'color': 'white',
+                    'text-align': 'left',
+                    'border-color': '#d3d3d3',
+                    'border-style': 'solid',
+                    'border-width': '1px'
+                }).set_table_styles([
+                    {'selector': 'th', 'props': [('background-color', '#2196F3'), ('color', 'white'), ('font-weight', 'bold')]}
+                ]).format({'Global_Sales': '{:.2f}'})
+                st.dataframe(styled_sales, use_container_width=True)
+                fig = px.line(
+                    year_sales,
+                    x='Year',
+                    y='Global_Sales',
+                    title=f'Vendas Globais por Ano ({year_range[0]} a {year_range[1]})',
+                    labels={'Global_Sales': 'Vendas (milhões)', 'Year': 'Ano'},
+                    markers=True,
+                    color_discrete_sequence=['#2196F3']
+                )
+                fig.update_layout(
+                    xaxis_title='Ano',
+                    yaxis_title='Vendas (milhões)',
+                    height=400
+                )
+                st.plotly_chart(fig, use_container_width=True)
+    
+    elif op == 'Busca de Jogos':
+        st.subheader('Busca de Jogos')
+        st.markdown('Procure jogos específicos e veja seus detalhes.')
+        search_term = st.sidebar.text_input('Digite o nome do jogo (ou parte dele):', key='search_term')
+        if st.sidebar.button('Buscar', key='search_button'):
+            if search_term:
+                filtered_df = df[df['Name'].str.contains(search_term, case=False, na=False)]
+                if not filtered_df.empty:
+                    st.write(f'**Resultados da busca por "{search_term}":**')
+                    styled_results = filtered_df[['Name', 'Platform', 'Year', 'Genre', 'Publisher']].style.set_properties(**{
+                        'background-color': '#4F1C51',
+                        'color': 'white',
+                        'text-align': 'left',
+                        'border-color': '#d3d3d3',
+                        'border-style': 'solid',
+                        'border-width': '1px'
+                    }).set_table_styles([
+                        {'selector': 'th', 'props': [('background-color', '#FF5722'), ('color', 'white'), ('font-weight', 'bold')]}
+                    ])
+                    st.dataframe(styled_results, use_container_width=True)
+                    for _, row in filtered_df.iterrows():
+                        with st.expander(f"Detalhes: {row['Name']}"):
+                            st.write(f"**Rank:** {row['Rank']}")
+                            st.write(f"**Plataforma:** {row['Platform']}")
+                            st.write(f"**Ano:** {int(row['Year']) if pd.notnull(row['Year']) else 'Desconhecido'}")
+                            st.write(f"**Gênero:** {row['Genre']}")
+                            st.write(f"**Editora:** {row['Publisher']}")
+                            st.write(f"**Vendas Globais:** {row['Global_Sales']:.2f} milhões")
+                            st.write(f"**Vendas NA:** {row['NA_Sales']:.2f} milhões")
+                            st.write(f"**Vendas EU:** {row['EU_Sales']:.2f} milhões")
+                            st.write(f"**Vendas JP:** {row['JP_Sales']:.2f} milhões")
+                            st.write(f"**Vendas Outros:** {row['Other_Sales']:.2f} milhões")
+                else:
+                    st.warning(f'Nenhum jogo encontrado com o termo "{search_term}".')
+            else:
+                st.info('Por favor, insira um termo de busca.')
 
-# Lógica principal
+# Executa a função correspondente à opção selecionada
 if op == 'Informações sobre o arquivo':
     inf_arv()
 elif op == 'Vendas':
