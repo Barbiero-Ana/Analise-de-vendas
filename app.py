@@ -6,22 +6,18 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 
-# Configuração da página
 st.set_page_config(page_title='Análise de Vendas de Games', layout='wide')
 
-# Verifica se o arquivo existe
 csv_file = 'vgsales.csv'
 if not os.path.exists(csv_file):
     st.error(f"Arquivo {csv_file} não encontrado. Certifique-se de que o arquivo está no diretório correto.")
     st.stop()
 
-# Carrega o dataset
+
 df = pd.read_csv(csv_file)
 # Garante que a coluna 'Year' seja tratada como inteiros, lidando com valores nulos
 df['Year'] = pd.to_numeric(df['Year'], errors='coerce').astype('Int64')
 column_names = df.columns
-
-# Configurações de exibição do pandas
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.expand_frame_repr', False)
@@ -42,7 +38,7 @@ op = st.sidebar.selectbox('Escolha a opção que lhe atende', [
 st.title('Análise de Venda de Games')
 st.markdown('Uma análise realizada com base em dados fornecidos pela CyberEdux')
 
-# CSS personalizado para cartões de métricas, detalhes de jogos e animações
+# CSS personalizado para cartões 
 st.markdown("""
     <style>
     .metric-card {
@@ -145,8 +141,6 @@ def inf_arv():
     
     if op == 'Título das colunas':
         st.subheader('Colunas do Conjunto de Dados')
-        
-        # Opção para alternar entre visualizações
         view_mode = st.radio(
             'Escolha o modo de visualização:',
             ['Tabela Interativa', 'Cartões'],
@@ -277,7 +271,6 @@ def inf_arv():
             )
             st.plotly_chart(fig_cols, use_container_width=True)
         
-        # Resumo
         with col3:
             total_cells = df.shape[0] * df.shape[1]
             st.markdown(f"""
