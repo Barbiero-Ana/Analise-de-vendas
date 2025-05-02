@@ -7,7 +7,7 @@ pd.set_option('display.max_rows', None)  # mostra todas as linhas (tira os ... q
 pd.set_option('display.max_columns', None)  # mostra todas as colunas (tira os ... que o pandas resume)
 pd.set_option('display.expand_frame_repr', False) # deve mostrar todos os cabecalhos (tira os ... que o pandas resume)
 
-# -> Considerar ideia de trocar os if/else por match case
+
 # if 4 -> Lancamento de jogos e deixar a pessoa poder escolher o filtro de quando foi lancado (ano)
 # o global sales é a soma de todas as outras vendas (eu_sales, na_sales, jp_sales)
 
