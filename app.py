@@ -212,10 +212,8 @@ def inf_arv():
                     st.write(f"**Valores Não Nulos:** {df[row['Nome da Coluna']].notnull().sum():,}")
                     st.write(f"**Tipo de Dado:** {str(df[row['Nome da Coluna']].dtype)}")
     
-    elif op == 'Número de linhas e colunas':
-        st.subheader('Dimensões do Conjunto de Dados')
-        st.markdown('Descubra o tamanho do dataset com uma visualização dinâmica e interativa.')
-        
+    if op == 'Número de linhas e colunas':
+        st.subheader('Dimensões do Conjunto de Dados')        
         # Layout em três colunas
         col1, col2, col3 = st.columns([1, 1, 1])
         
@@ -224,12 +222,10 @@ def inf_arv():
             st.markdown(f"""
                 <div class="metric-card">
                     <h3>📊 Número de Linhas</h3>
-                    <p><span id="row_counter" class="counter">0</span></p>
+                    <p>{df.shape[0]:,}</p>
                 </div>
-                <script>
-                    animateValue("row_counter", 0, {df.shape[0]}, 1500);
-                </script>
             """, unsafe_allow_html=True)
+            
             # Gauge para número de linhas
             fig_rows = px.pie(
                 values=[df.shape[0], max(100000 - df.shape[0], 0)],
@@ -254,12 +250,10 @@ def inf_arv():
             st.markdown(f"""
                 <div class="metric-card">
                     <h3>📈 Número de Colunas</h3>
-                    <p><span id="col_counter" class="counter">0</span></p>
+                    <p>{df.shape[1]}</p>
                 </div>
-                <script>
-                    animateValue("col_counter", 0, {df.shape[1]}, 1500);
-                </script>
             """, unsafe_allow_html=True)
+            
             # Gauge para número de colunas
             fig_cols = px.pie(
                 values=[df.shape[1], max(50 - df.shape[1], 0)],
@@ -285,15 +279,12 @@ def inf_arv():
             st.markdown(f"""
                 <div class="metric-card">
                     <h3>🔢 Total de Células</h3>
-                    <p><span id="cell_counter" class="counter">0</span></p>
+                    <p>{total_cells:,}</p>
                 </div>
-                <script>
-                    animateValue("cell_counter", 0, {total_cells}, 1500);
-                </script>
             """, unsafe_allow_html=True)
             st.markdown(f"""
                 <div class="metric-card">
-                    <h3>🎉 Curiosidade</h3>
+                    <h3>🎉 Fun Fact</h3>
                     <p>Este dataset tem {total_cells:,} células, equivalente a {total_cells // 500:,} páginas de um livro!</p>
                 </div>
             """, unsafe_allow_html=True)
