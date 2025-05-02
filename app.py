@@ -141,7 +141,6 @@ def inf_arv():
     
     if op == 'Título das colunas':
         st.subheader('Colunas do Conjunto de Dados')
-        st.markdown('Explore os nomes das colunas que descrevem os atributos dos jogos no dataset.')
         
         # Opção para alternar entre visualizações
         view_mode = st.radio(
@@ -189,7 +188,7 @@ def inf_arv():
             )])
             table.update_layout(
                 title_text='Lista de Colunas do Dataset',
-                title_x=0.5,
+                title_x=0.4,
                 margin=dict(t=50, b=50),
                 paper_bgcolor='rgba(0,0,0,0)',
                 autosize=True
@@ -198,7 +197,6 @@ def inf_arv():
         
         else:
             # Visualização em cartões
-            st.markdown('**Colunas apresentadas em cartões interativos**')
             for _, row in columns_df.iterrows():
                 st.markdown(f"""
                     <div class="metric-card tooltip">
@@ -550,7 +548,7 @@ def filtro_vendas():
                 </div>
             """, unsafe_allow_html=True)
     
-    elif op == 'Filtrar por nome do jogo':
+    if op == 'Filtrar por nome do jogo':
         jogo = st.sidebar.selectbox('Selecione o nome do jogo:', sorted(df['Name'].dropna().unique()), key='vendas_game_name')
         if st.sidebar.button('Filtrar', key='vendas_filter_game_name'):
             jogo_filter = df[df['Name'] == jogo].groupby('Name').agg({
@@ -567,20 +565,35 @@ def filtro_vendas():
             }).reset_index()
             if not jogo_filter.empty:
                 linha = jogo_filter.iloc[0]
-                st.write(f'**Detalhes do jogo: {jogo}**')
-                st.write(f'**Rank:** {linha['Rank']}')
-                st.write(f'**Empresa:** {linha['Publisher']}')
-                st.write(f'**Ano:** {int(linha['Year']) if pd.notnull(linha['Year']) else 'Desconhecido'}')
-                st.write(f'**Gênero:** {linha['Genre']}')
-                st.write(f'**Plataforma:** {linha['Platform']}')
-                st.write(f'**Vendas Globais:** {linha['Global_Sales']:.2f} milhões')
-                st.write(f'**Vendas NA:** {linha['NA_Sales']:.2f} milhões')
-                st.write(f'**Vendas EU:** {linha['EU_Sales']:.2f} milhões')
-                st.write(f'**Vendas JP:** {linha['JP_Sales']:.2f} milhões')
-                st.write(f'**Vendas Outros:** {linha['Other_Sales']:.2f} milhões')
+                st.markdown(f"""
+                    <div class="game-card">
+                        <h2>{linha['Name']}</h2>
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="flex: 1;">
+                                <p><strong>Rank:</strong> {linha['Rank']}</p>
+                                <p><strong>Empresa:</strong> {linha['Publisher']}</p>
+                                <p><strong>Ano:</strong> {int(linha['Year']) if pd.notnull(linha['Year']) else 'Desconhecido'}</p>
+                            </div>
+                            <div style="flex: 1;">
+                                <p><strong>Gênero:</strong> {linha['Genre']}</p>
+                                <p><strong>Plataforma:</strong> {linha['Platform']}</p>
+                            </div>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                with st.expander("Detalhes de Vendas"):
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric(label="Vendas Globais", value=f"{linha['Global_Sales']:.2f} milhões")
+                        st.metric(label="Vendas NA", value=f"{linha['NA_Sales']:.2f} milhões")
+                    with col2:
+                        st.metric(label="Vendas EU", value=f"{linha['EU_Sales']:.2f} milhões")
+                        st.metric(label="Vendas JP", value=f"{linha['JP_Sales']:.2f} milhões")
+                    with col3:
+                        st.metric(label="Vendas Outros", value=f"{linha['Other_Sales']:.2f} milhões")
             else:
                 st.warning(f'Jogo {jogo} não encontrado.')
-    
+
     elif op == 'Ver métricas':
         genres = st.sidebar.multiselect(
             'Selecione os gêneros:', 
