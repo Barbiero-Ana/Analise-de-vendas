@@ -26,6 +26,8 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.expand_frame_repr', False)
 
+
+
 # Menu lateral
 op = st.sidebar.selectbox('Escolha a opção que lhe atende', [
     'Informações sobre o arquivo',
@@ -34,6 +36,8 @@ op = st.sidebar.selectbox('Escolha a opção que lhe atende', [
     'Ocorrências',
     'Métricas Avançadas'
 ], key='main_menu')
+
+
 
 st.title('Análise de Venda de Games')
 st.markdown('Uma análise realizada com base em dados fornecidos pela CyberEdux')
@@ -1494,3 +1498,13 @@ elif op == 'Ocorrências':
     ocorrencias()
 elif op == 'Métricas Avançadas':
     metricas_avancadas()
+
+# botao de download
+with open(csv_file, "rb") as file:
+    st.sidebar.download_button(
+        label="Baixar arquivo CSV analisado",
+        data=file,
+        file_name="vgsales.csv",
+        mime="text/csv",
+        key="download_csv"
+    )
